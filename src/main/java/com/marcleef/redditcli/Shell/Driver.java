@@ -15,6 +15,7 @@ public class Driver {
     private static String USER_NAME;
     private static String PASSWORD;
     private static boolean CONNECTED = false;
+    private static boolean RUNNING = false;
     public static void main(String[] args) {
         Console console = System.console();
 
@@ -29,10 +30,15 @@ public class Driver {
             try {
                 user.connect();
                 CONNECTED = true;
+                RUNNING = true;
 
             } catch (Exception e) {
-                System.out.println("Invalid Username/Password Combination");
+                System.out.println("Authentication Failed: Invalid Username/Password Combination");
             }
+        }
+
+        while(RUNNING) {
+            Parser.handle(new Command(console.readLine(USER_NAME + "> ")));
         }
 
 
