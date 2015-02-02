@@ -1,6 +1,11 @@
+package com.marcleef.redditcli.Shell;
+
+import com.github.jreddit.utils.ApiEndpointUtils;
 import com.github.jreddit.utils.restclient.*;
 import com.github.jreddit.entity.User;
 import com.github.jreddit.message.*;
+import org.json.simple.JSONObject;
+
 import java.util.*;
 /**
  * Created by marc_leef on 1/31/15.
@@ -14,12 +19,11 @@ public class Driver {
 
         // Connect the user
         User user = new User(restClient, "horseradisher", "jordan");
+
         try {
             user.connect();
-            List<Message> inbox = new Messages(restClient).getMessages(user, 10, MessageType.INBOX);
-            for(Message M : inbox) {
-                System.out.println(M.getBody());
-            }
+            JSONObject jsonObject = (JSONObject) restClient.get(ApiEndpointUtils.USER_GET_SUBSCRIBED, user.getCookie()).getResponseObject();
+            System.out.println(jsonObject.toJSONString());
         } catch (Exception e) {
             e.printStackTrace();
         }
