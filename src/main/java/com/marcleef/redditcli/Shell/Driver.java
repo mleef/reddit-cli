@@ -2,17 +2,10 @@ package com.marcleef.redditcli.Shell;
 
 import com.github.jreddit.action.ProfileActions;
 import com.github.jreddit.entity.UserInfo;
-import com.github.jreddit.utils.ApiEndpointUtils;
 import com.github.jreddit.utils.restclient.*;
 import com.github.jreddit.entity.User;
-import com.github.jreddit.message.*;
-import com.marcleef.redditcli.Directory.ContainerNode;
-import com.marcleef.redditcli.Directory.FileNode;
-import com.marcleef.redditcli.Directory.Node;
-import org.json.simple.JSONObject;
+import com.marcleef.redditcli.Directory.*;
 import java.io.Console;
-
-import java.util.*;
 /**
  * Created by marc_leef on 1/31/15.
  */

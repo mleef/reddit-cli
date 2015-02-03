@@ -86,6 +86,6 @@ public final class Parser {
             }
         }
 
-        throw (new MalformedCommandException("No matching commands"));
+        throw (new MalformedCommandException("No matching commands - '" + primaryCommand + "'"));
     }
 }
