@@ -47,11 +47,13 @@ public class Node {
      * @return String concatenation of all branch names, seperated by tab.
      */
     public String getBranches() {
-        String result = null;
+        String result = "";
         for(Node n : links) {
             result += n.getName() + "\t";
         }
-
+        if(result == "") {
+            return null;
+        }
         return result;
     }
 

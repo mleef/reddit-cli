@@ -15,8 +15,10 @@ public final class Parser {
 
     private static final String HELP_INFO = "Help";
     private static Node currentNode;
+    private static Node rootNode;
 
     public Parser(Node root) {
+        rootNode = root;
         currentNode = root;
     }
 
@@ -107,7 +109,13 @@ public final class Parser {
             }
 
             else {
-                throw (new MalformedCommandException("'cd' takes one argument"));
+                if(argLength == 0 && flagLength == 0) {
+                    currentNode = rootNode;
+                    return null;
+                }
+                else {
+                    throw (new MalformedCommandException("'cd' not used properly"));
+                }
             }
         }
 
