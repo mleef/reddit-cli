@@ -12,6 +12,7 @@ public class Command {
         String[] tokens = line.split(" ");
         primaryCommand = tokens[0];
         flags = new ArrayList<String>();
+        args = new ArrayList<String>();
         if(tokens.length > 1)  {
             for(int i = 1; i < tokens.length; i++) {
                 if(tokens[i].contains("-")) {
@@ -31,5 +32,17 @@ public class Command {
                 ", args=" + args +
                 ", flags=" + flags +
                 '}';
+    }
+
+    public String getPrimaryCommand() {
+        return primaryCommand;
+    }
+
+    public ArrayList<String> getArgs() {
+        return args;
+    }
+
+    public ArrayList<String> getFlags() {
+        return flags;
     }
 }
