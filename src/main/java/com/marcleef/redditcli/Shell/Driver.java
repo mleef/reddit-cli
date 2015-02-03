@@ -5,8 +5,10 @@ import com.github.jreddit.entity.UserInfo;
 import com.github.jreddit.utils.restclient.*;
 import com.github.jreddit.entity.User;
 import com.marcleef.redditcli.Directory.*;
+import com.marcleef.redditcli.Action.Retrieval;
 import java.io.Console;
 /**
+ * Main driver class of program.
  * Created by marc_leef on 1/31/15.
  */
 public class Driver {
@@ -17,7 +19,8 @@ public class Driver {
     private static User user;
     private static ProfileActions profActions;
     private static RestClient restClient;
-    private static ContainerNode currentNode;
+    private static Retrieval retriever;
+    private static Node currentNode;
     private static Parser parser;
     public static void main(String[] args) {
         Console console = System.console();
@@ -33,7 +36,8 @@ public class Driver {
 
             try {
                 user.connect();
-                parser = new Parser();
+                profActions = new ProfileActions(restClient, user);
+                retriever = new Retrieval(restClient, user, profActions);
                 CONNECTED = true;
                 RUNNING = true;
 
@@ -43,14 +47,18 @@ public class Driver {
         }
 
         // Set up user's home directory
-        currentNode = buildHomeDirectory();
+        currentNode = retriever.buildHomeDirectory();
+        parser = new Parser(currentNode);
 
         // Primary loop
         while(RUNNING) {
             String result;
             try {
                 result = parser.handle(new Command(console.readLine(USER_NAME + "> ")), currentNode);
-                System.out.println(result);
+                if(result != null) {
+                    System.out.println(result);
+                }
+                currentNode = parser.updateCurrentNode();
             }
             catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
@@ -61,26 +69,5 @@ public class Driver {
 
     }
 
-    /**
-     * Returns new container node that has been populated with user info and subscribed subreddits.
-     *
-     * @return Home node ContainerNode
-     */
-    public static ContainerNode buildHomeDirectory() {
-        profActions = new ProfileActions(restClient, user);
-        ContainerNode home = new ContainerNode("home", null);
-        ContainerNode subreddits = new ContainerNode("subreddits", home);
-        try {
-            UserInfo ui = profActions.getUserInformation();
-            FileNode userInfo = new FileNode("user_info.txt", home, ui.toString());
-
-            home.addBranch(userInfo);
-            home.addBranch(subreddits);
-        }
-        catch (Exception e) {
-            System.out.println("Couldn't Get User Information: " + e.getMessage());
-        }
-        return home;
-    }
 
 }

@@ -14,9 +14,10 @@ import java.util.ArrayList;
 public final class Parser {
 
     private static final String HELP_INFO = "Help";
+    private static Node currentNode;
 
-    public Parser() {
-
+    public Parser(Node root) {
+        currentNode = root;
     }
 
     /**
@@ -31,6 +32,7 @@ public final class Parser {
         ArrayList<String> flags = c.getFlags();
         int argLength = args.size();
         int flagLength = flags.size();
+
 
         // Basic help command
         // TODO: Should display available commands and other information
@@ -86,6 +88,37 @@ public final class Parser {
             }
         }
 
+        // Move directories
+        else if (primaryCommand.equals("cd")) {
+            if(argLength == 1 && flagLength == 0) {
+                String cdTarget = args.get(0);
+                if(cdTarget.equals("..") && curNode.getParent() != null) {
+                    currentNode = curNode.getParent();
+                    return null;
+                }
+                else {
+                    try {
+                        currentNode = curNode.getBranchByName(cdTarget);
+                        return null;
+                    } catch (Exception e) {
+                        throw (new NodeNotFoundException(cdTarget + " not found in current directory"));
+                    }
+                }
+            }
+
+            else {
+                throw (new MalformedCommandException("'cd' takes one argument"));
+            }
+        }
+
         throw (new MalformedCommandException("No matching commands - '" + primaryCommand + "'"));
+    }
+
+    /**
+     * Returns updated reference to current node
+     * @return Current node.
+     */
+    public static Node updateCurrentNode() {
+        return currentNode;
     }
 }

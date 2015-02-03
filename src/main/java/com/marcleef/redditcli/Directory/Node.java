@@ -14,6 +14,12 @@ public class Node {
     private ArrayList<Node> links;
     private String path;
 
+    /**
+     * Superclass constructor
+     * @param n Name of new node
+     * @param p Parent of new node
+     * @return Moderated node ContainerNode
+     */
     public Node(String n, Node p) {
         name = n;
         parent = p;
@@ -29,12 +35,19 @@ public class Node {
         return path;
     }
 
+    public Node getParent() { return parent; }
+
     public void addBranch(Node n) {
         links.add(n);
     }
 
+    /**
+     * Returns string of all branch names from current node.
+     *
+     * @return String concatenation of all branch names, seperated by tab.
+     */
     public String getBranches() {
-        String result = "";
+        String result = null;
         for(Node n : links) {
             result += n.getName() + "\t";
         }
@@ -42,6 +55,11 @@ public class Node {
         return result;
     }
 
+    /**
+     * Returns new container node that has been populated with user moderated subreddits.
+     * @param n Name of node to find
+     * @return Node whose name matches parameter
+     */
     public Node getBranchByName(String n) throws NodeNotFoundException{
         for(Node node : links) {
             if(node.getName().equals(n)) {
@@ -51,6 +69,11 @@ public class Node {
         throw (new NodeNotFoundException(n));
     }
 
+    /**
+     * Returns node data (subclasses override)
+     *
+     * @return Node data
+     */
     public String getData() {
         return null;
     }
