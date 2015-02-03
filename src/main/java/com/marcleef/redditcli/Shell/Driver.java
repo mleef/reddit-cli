@@ -1,10 +1,14 @@
 package com.marcleef.redditcli.Shell;
 
 import com.github.jreddit.action.ProfileActions;
+import com.github.jreddit.entity.UserInfo;
 import com.github.jreddit.utils.ApiEndpointUtils;
 import com.github.jreddit.utils.restclient.*;
 import com.github.jreddit.entity.User;
 import com.github.jreddit.message.*;
+import com.marcleef.redditcli.Directory.ContainerNode;
+import com.marcleef.redditcli.Directory.FileNode;
+import com.marcleef.redditcli.Directory.Node;
 import org.json.simple.JSONObject;
 import java.io.Console;
 
@@ -20,6 +24,8 @@ public class Driver {
     private static User user;
     private static ProfileActions profActions;
     private static RestClient restClient;
+    private static ContainerNode currentNode;
+    private static Parser parser;
     public static void main(String[] args) {
         Console console = System.console();
 
@@ -34,7 +40,7 @@ public class Driver {
 
             try {
                 user.connect();
-                profActions = new ProfileActions(restClient, user);
+                parser = new Parser();
                 CONNECTED = true;
                 RUNNING = true;
 
@@ -43,19 +49,45 @@ public class Driver {
             }
         }
 
+        // Set up user's home directory
+        currentNode = buildHomeDirectory();
+
+        // Primary loop
         while(RUNNING) {
             String result;
             try {
-                result = Parser.handle(new Command(console.readLine(USER_NAME + "> ")));
+                result = parser.handle(new Command(console.readLine(USER_NAME + "> ")), currentNode);
                 System.out.println(result);
             }
             catch (Exception e) {
-                System.out.println("Malformed Command: " + e.getMessage());
+                System.out.println("Error: " + e.getMessage());
             }
         }
 
 
 
+    }
+
+    /**
+     * Returns new container node that has been populated with user info and subscribed subreddits.
+     *
+     * @return Home node ContainerNode
+     */
+    public static ContainerNode buildHomeDirectory() {
+        profActions = new ProfileActions(restClient, user);
+        ContainerNode home = new ContainerNode("home", null);
+        ContainerNode subreddits = new ContainerNode("subreddits", home);
+        try {
+            UserInfo ui = profActions.getUserInformation();
+            FileNode userInfo = new FileNode("user_info.txt", home, ui.toString());
+
+            home.addBranch(userInfo);
+            home.addBranch(subreddits);
+        }
+        catch (Exception e) {
+            System.out.println("Couldn't Get User Information: " + e.getMessage());
+        }
+        return home;
     }
 
 }
