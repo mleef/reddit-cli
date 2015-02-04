@@ -1,14 +1,18 @@
 package com.marcleef.redditcli.Action;
 
 import com.github.jreddit.action.ProfileActions;
+import com.github.jreddit.entity.Submission;
 import com.github.jreddit.entity.Subreddit;
 import com.github.jreddit.entity.UserInfo;
 import com.github.jreddit.entity.User;
 import com.github.jreddit.retrieval.Subreddits;
+import com.github.jreddit.retrieval.Submissions;
+import com.github.jreddit.retrieval.params.SubmissionSort;
 import com.github.jreddit.utils.restclient.RestClient;
 import com.marcleef.redditcli.Directory.ContainerNode;
 import com.marcleef.redditcli.Directory.FileNode;
 import java.util.List;
+import java.util.ArrayList;
 import com.marcleef.redditcli.Directory.*;
 /**
  * Interfaces with jreddit to populate directory with Reddit entities.
@@ -19,6 +23,7 @@ public class Retrieval {
     private static ProfileActions profActions;
     private static RestClient restClient;
     private static Subreddits subredditActions;
+    private static Submissions submission;
 
     /**
      * Constructor, handles interaction with jreddit.
@@ -30,6 +35,7 @@ public class Retrieval {
         user = usr;
         profActions = profAct;
         subredditActions = new Subreddits(restClient, user);
+        submission = new Submissions(restClient, user);
     }
     /**
      * Returns new container node that has been populated with user info and subscribed subreddits.
@@ -96,6 +102,17 @@ public class Retrieval {
             contributed.addBranch(new SubredditNode(s.getDisplayName(), contributed, s));
         }
         return contributed;
+    }
+
+    public static ArrayList<SubmissionNode> buildSubmissions(SubredditNode parent) {
+        Subreddit sub = parent.subreddit;
+        ArrayList<SubmissionNode> result = new ArrayList<SubmissionNode>();
+        List<Submission> submissionsSubreddit = submission.ofSubreddit(sub.getDisplayName(), SubmissionSort.TOP, -1, 25, null, null, true);
+        for(Submission subm : submissionsSubreddit) {
+            result.add(new SubmissionNode(subm.getTitle(), parent, subm));
+        }
+
+        return result;
     }
 
 }

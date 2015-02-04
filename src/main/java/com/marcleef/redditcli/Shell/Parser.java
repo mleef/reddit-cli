@@ -1,5 +1,6 @@
 package com.marcleef.redditcli.Shell;
 
+import com.marcleef.redditcli.Action.Retrieval;
 import com.marcleef.redditcli.Exceptions.MalformedCommandException;
 import com.marcleef.redditcli.Directory.Node;
 import com.marcleef.redditcli.Exceptions.NodeNotFoundException;
@@ -16,10 +17,12 @@ public final class Parser {
     private static final String HELP_INFO = "Help";
     private static Node currentNode;
     private static Node rootNode;
+    private static Retrieval retriever;
 
-    public Parser(Node root) {
+    public Parser(Retrieval r, Node root) {
         rootNode = root;
         currentNode = root;
+        retriever = r;
     }
 
     /**
@@ -57,7 +60,7 @@ public final class Parser {
         // TODO: Should be able to process argument (target directory)
         else if (primaryCommand.equals("ls")) {
             if (argLength == 0 && flagLength == 0) {
-                return curNode.getBranches();
+                return curNode.getBranchText();
             } else {
                 throw (new MalformedCommandException("'ls' takes no arguments or flags"));
             }
@@ -101,6 +104,9 @@ public final class Parser {
                 else {
                     try {
                         currentNode = curNode.getBranchByName(cdTarget);
+                        if(currentNode.needsToBePopulated()) {
+                            currentNode.populate(retriever);
+                        }
                         return null;
                     } catch (Exception e) {
                         throw (new NodeNotFoundException(cdTarget + " not found in current directory"));

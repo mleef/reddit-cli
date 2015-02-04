@@ -1,5 +1,6 @@
 package com.marcleef.redditcli.Directory;
 
+import com.marcleef.redditcli.Action.Retrieval;
 import com.marcleef.redditcli.Exceptions.NodeNotFoundException;
 
 import java.util.ArrayList;
@@ -41,20 +42,35 @@ public class Node {
         links.add(n);
     }
 
+    public void addBranches(Node... nodes) {
+        for(Node n : nodes) {
+            links.add(n);
+        }
+    }
+
     /**
      * Returns string of all branch names from current node.
      *
      * @return String concatenation of all branch names, seperated by tab.
      */
-    public String getBranches() {
+    public String getBranchText() {
         String result = "";
         for(Node n : links) {
-            result += n.getName() + "\t";
+            result += n.getName() + "\n";
         }
         if(result == "") {
             return null;
         }
-        return result;
+        return result.substring(0, result.length() - 1);
+    }
+
+    /**
+     * Returns string of all branch names from current node.
+     *
+     * @return String concatenation of all branch names, seperated by tab.
+     */
+    public ArrayList<Node> getBranches() {
+        return links;
     }
 
     /**
@@ -78,5 +94,13 @@ public class Node {
      */
     public String getData() {
         return null;
+    }
+
+    public boolean needsToBePopulated() {
+        return true;
+    }
+
+    public void populate(Retrieval retrieval) {
+
     }
 }

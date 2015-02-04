@@ -48,7 +48,7 @@ public class Driver {
 
         // Set up user's home directory
         currentNode = retriever.buildHomeDirectory();
-        parser = new Parser(currentNode);
+        parser = new Parser(retriever, currentNode);
 
         // Primary loop
         while(RUNNING) {
