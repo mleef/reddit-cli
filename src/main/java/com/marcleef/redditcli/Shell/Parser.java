@@ -1,5 +1,6 @@
 package com.marcleef.redditcli.Shell;
 
+import com.github.jreddit.exception.RetrievalFailedException;
 import com.marcleef.redditcli.Action.Retrieval;
 import com.marcleef.redditcli.Exceptions.MalformedCommandException;
 import com.marcleef.redditcli.Directory.Node;
@@ -108,8 +109,11 @@ public final class Parser {
                             currentNode.populate(retriever);
                         }
                         return null;
-                    } catch (Exception e) {
-                        throw (new NodeNotFoundException(cdTarget + " not found in current directory"));
+                    } catch (NodeNotFoundException e) {
+                        throw (e);
+                    } catch (RetrievalFailedException e) {
+                        currentNode = currentNode.getParent();
+                        throw (e);
                     }
                 }
             }

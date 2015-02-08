@@ -14,6 +14,7 @@ public class Node {
     private Node parent;
     private ArrayList<Node> links;
     private String path;
+    private String cdID;
 
     /**
      * Superclass constructor
@@ -22,6 +23,7 @@ public class Node {
      * @return Moderated node ContainerNode
      */
     public Node(String n, Node p) {
+        cdID = n;
         name = n;
         parent = p;
         links = new ArrayList<Node>();
@@ -80,11 +82,12 @@ public class Node {
      */
     public Node getBranchByName(String n) throws NodeNotFoundException{
         for(Node node : links) {
-            if(node.getName().equals(n)) {
+            if(node.getCdID().equals(n)) {
                 return node;
             }
+
         }
-        throw (new NodeNotFoundException(n));
+        throw (new NodeNotFoundException(n + " not found in current directory"));
     }
 
     /**
@@ -102,5 +105,9 @@ public class Node {
 
     public void populate(Retrieval retrieval) {
 
+    }
+
+    public String getCdID() {
+        return cdID;
     }
 }

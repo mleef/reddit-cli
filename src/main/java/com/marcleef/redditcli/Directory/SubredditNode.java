@@ -1,6 +1,7 @@
 package com.marcleef.redditcli.Directory;
 
 import com.github.jreddit.entity.Subreddit;
+import com.github.jreddit.exception.RetrievalFailedException;
 import com.marcleef.redditcli.Action.Retrieval;
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  */
 public class SubredditNode extends Node {
     public Subreddit subreddit;
-    private boolean populated = true;
+    private boolean populated = false;
     public SubredditNode(String n, Node p, Subreddit sub) {
         super(n, p);
         subreddit = sub;
@@ -18,15 +19,22 @@ public class SubredditNode extends Node {
 
     @Override
     public boolean needsToBePopulated() {
-        return populated;
+        return !populated;
     }
 
     @Override
     public void populate(Retrieval retrieval) {
-        ArrayList<SubmissionNode> results = retrieval.buildSubmissions(this);
-        for(SubmissionNode node : results) {
-            this.addBranch(node);
+        try {
+            ArrayList<SubmissionNode> results = retrieval.buildSubmissions(this);
+            for (SubmissionNode node : results) {
+                this.addBranch(node);
+            }
+            populated = true;
         }
-        populated = false;
+        catch (Exception e) {
+            throw(new RetrievalFailedException("Could not fetch submissions from " + subreddit.getDisplayName()));
+        }
     }
+
+
 }
